@@ -14,7 +14,138 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      courses: {
+        Row: {
+          code: string
+          created_at: string
+          credits: number | null
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          credits?: number | null
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          credits?: number | null
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      exam_schedules: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          schedule_data: Json
+          stats: Json | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          schedule_data: Json
+          stats?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          schedule_data?: Json
+          stats?: Json | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      instructors: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          name: string
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          name: string
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string
+          subject?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      programs: {
+        Row: {
+          created_at: string
+          department: string | null
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          department?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          department?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      rooms: {
+        Row: {
+          capacity: number | null
+          created_at: string
+          id: string
+          name: string
+          type: string | null
+          updated_at: string
+        }
+        Insert: {
+          capacity?: number | null
+          created_at?: string
+          id?: string
+          name: string
+          type?: string | null
+          updated_at?: string
+        }
+        Update: {
+          capacity?: number | null
+          created_at?: string
+          id?: string
+          name?: string
+          type?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
