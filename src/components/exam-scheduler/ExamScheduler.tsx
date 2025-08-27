@@ -6,91 +6,77 @@ import { DataCard } from "./DataCard";
 import { ScheduleGeneration } from "./ScheduleGeneration";
 import { Instructor, Course, Room, Program } from "./types";
 import { Card } from "@/components/ui/card";
+import { useInstructors, useAddInstructor, useDeleteInstructor } from '@/hooks/useInstructors';
+import { useCourses, useAddCourse, useDeleteCourse } from '@/hooks/useCourses';
+import { useRooms, useAddRoom, useDeleteRoom } from '@/hooks/useRooms';
+import { usePrograms, useAddProgram, useDeleteProgram } from '@/hooks/usePrograms';
 
 export function ExamScheduler() {
   const [activeSection, setActiveSection] = useState('dashboard');
-  const [instructors, setInstructors] = useState<Instructor[]>([
-    { id: '1', name: 'Dr. Smith', subject: 'Mathematics', email: 'smith@university.edu' },
-    { id: '2', name: 'Prof. Johnson', subject: 'Physics', email: 'johnson@university.edu' },
-    { id: '3', name: 'Ms. Davis', subject: 'Chemistry', email: 'davis@university.edu' },
-    { id: '4', name: 'Mr. Wilson', subject: 'Computer Science', email: 'wilson@university.edu' },
-    { id: '5', name: 'Dr. Brown', subject: 'Biology', email: 'brown@university.edu' }
-  ]);
   
-  const [courses, setCourses] = useState<Course[]>([
-    { id: '1', name: 'Advanced Mathematics', code: 'MATH301', credits: 3 },
-    { id: '2', name: 'Physics Fundamentals', code: 'PHYS101', credits: 4 },
-    { id: '3', name: 'Organic Chemistry', code: 'CHEM201', credits: 3 },
-    { id: '4', name: 'Data Structures', code: 'CS202', credits: 3 },
-    { id: '5', name: 'Cell Biology', code: 'BIO301', credits: 3 },
-    { id: '6', name: 'Statistics', code: 'STAT201', credits: 3 }
-  ]);
+  // Database queries
+  const { data: instructors = [], isLoading: instructorsLoading } = useInstructors();
+  const { data: courses = [], isLoading: coursesLoading } = useCourses();
+  const { data: rooms = [], isLoading: roomsLoading } = useRooms();
+  const { data: programs = [], isLoading: programsLoading } = usePrograms();
   
-  const [rooms, setRooms] = useState<Room[]>([
-    { id: '1', name: 'Room 101', capacity: 30, type: 'Lecture Hall' },
-    { id: '2', name: 'Lab A', capacity: 20, type: 'Laboratory' },
-    { id: '3', name: 'Auditorium', capacity: 150, type: 'Auditorium' }
-  ]);
+  // Mutations
+  const addInstructorMutation = useAddInstructor();
+  const deleteInstructorMutation = useDeleteInstructor();
+  const addCourseMutation = useAddCourse();
+  const deleteCourseMutation = useDeleteCourse();
+  const addRoomMutation = useAddRoom();
+  const deleteRoomMutation = useDeleteRoom();
+  const addProgramMutation = useAddProgram();
+  const deleteProgramMutation = useDeleteProgram();
   
-  const [programs, setPrograms] = useState<Program[]>([
-    { id: '1', name: 'Computer Science', department: 'Engineering' },
-    { id: '2', name: 'Engineering', department: 'Engineering' },
-    { id: '3', name: 'Biology', department: 'Sciences' }
-  ]);
+  const isLoading = instructorsLoading || coursesLoading || roomsLoading || programsLoading;
 
   const addInstructor = (data: Record<string, string>) => {
-    const newInstructor: Instructor = {
-      id: Date.now().toString(),
+    addInstructorMutation.mutate({
       name: data.name,
       subject: data.subject,
       email: data.email || undefined,
-    };
-    setInstructors(prev => [...prev, newInstructor]);
+    });
   };
 
   const addCourse = (data: Record<string, string>) => {
-    const newCourse: Course = {
-      id: Date.now().toString(),
+    addCourseMutation.mutate({
       name: data.name,
       code: data.code,
       credits: data.credits ? parseInt(data.credits) : undefined,
-    };
-    setCourses(prev => [...prev, newCourse]);
+    });
   };
 
   const addRoom = (data: Record<string, string>) => {
-    const newRoom: Room = {
-      id: Date.now().toString(),
+    addRoomMutation.mutate({
       name: data.name,
       capacity: data.capacity ? parseInt(data.capacity) : undefined,
       type: data.type || undefined,
-    };
-    setRooms(prev => [...prev, newRoom]);
+    });
   };
 
   const addProgram = (data: Record<string, string>) => {
-    const newProgram: Program = {
-      id: Date.now().toString(),
+    addProgramMutation.mutate({
       name: data.name,
       department: data.department || undefined,
-    };
-    setPrograms(prev => [...prev, newProgram]);
+    });
   };
 
   const removeInstructor = (id: string) => {
-    setInstructors(prev => prev.filter(item => item.id !== id));
+    deleteInstructorMutation.mutate(id);
   };
 
   const removeCourse = (id: string) => {
-    setCourses(prev => prev.filter(item => item.id !== id));
+    deleteCourseMutation.mutate(id);
   };
 
   const removeRoom = (id: string) => {
-    setRooms(prev => prev.filter(item => item.id !== id));
+    deleteRoomMutation.mutate(id);
   };
 
   const removeProgram = (id: string) => {
-    setPrograms(prev => prev.filter(item => item.id !== id));
+    deleteProgramMutation.mutate(id);
   };
 
   const renderContent = () => {
@@ -102,6 +88,7 @@ export function ExamScheduler() {
             courses={courses}
             rooms={rooms}
             programs={programs}
+            isLoading={isLoading}
           />
         );
         
@@ -242,6 +229,7 @@ export function ExamScheduler() {
             courses={courses}
             rooms={rooms}
             programs={programs}
+            isLoading={isLoading}
           />
         );
         

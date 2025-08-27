@@ -1,26 +1,41 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { TimeSlotCard } from "./TimeSlotCard";
 import { StatCard } from "./StatCard";
 import { Instructor, Course, Room, Program, ExamSlot, ScheduleData, TIME_SLOTS } from "./types";
-import { Download, Calendar, RefreshCw, Trash2 } from "lucide-react";
+import { Download, Calendar, RefreshCw, Trash2, Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useSaveExamSchedule } from '@/hooks/useExamSchedules';
 
 interface ScheduleGenerationProps {
   instructors: Instructor[];
   courses: Course[];
   rooms: Room[];
   programs: Program[];
+  isLoading?: boolean;
 }
 
-export function ScheduleGeneration({ instructors, courses, rooms, programs }: ScheduleGenerationProps) {
+export function ScheduleGeneration({ instructors, courses, rooms, programs, isLoading }: ScheduleGenerationProps) {
   const [schedule, setSchedule] = useState<ScheduleData>({});
   const [isGenerating, setIsGenerating] = useState(false);
   const [stats, setStats] = useState<any>(null);
+  const [scheduleName, setScheduleName] = useState('');
   const { toast } = useToast();
+  
+  const saveScheduleMutation = useSaveExamSchedule();
 
   const generateSchedule = async () => {
+    if (isLoading) {
+      toast({
+        title: "Loading",
+        description: "Please wait for data to load before generating schedule.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     if (instructors.length === 0 || courses.length === 0 || rooms.length === 0) {
       toast({
         title: "Missing Data",
@@ -141,9 +156,38 @@ export function ScheduleGeneration({ instructors, courses, rooms, programs }: Sc
     });
   };
 
+  const saveSchedule = () => {
+    if (!scheduleName.trim()) {
+      toast({
+        title: "Name Required",
+        description: "Please enter a name for the schedule.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (Object.keys(schedule).length === 0) {
+      toast({
+        title: "No Schedule",
+        description: "Please generate a schedule first.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    saveScheduleMutation.mutate({
+      name: scheduleName.trim(),
+      schedule_data: schedule,
+      stats
+    });
+    
+    setScheduleName('');
+  };
+
   const clearSchedule = () => {
     setSchedule({});
     setStats(null);
+    setScheduleName('');
     toast({
       title: "Schedule Cleared",
       description: "The exam schedule has been cleared.",
@@ -244,6 +288,26 @@ export function ScheduleGeneration({ instructors, courses, rooms, programs }: Sc
             Export Schedule
           </Button>
         </div>
+        
+        {hasSchedule && (
+          <div className="flex gap-2 mt-4">
+            <Input
+              placeholder="Enter schedule name..."
+              value={scheduleName}
+              onChange={(e) => setScheduleName(e.target.value)}
+              className="max-w-xs"
+            />
+            <Button 
+              onClick={saveSchedule}
+              disabled={saveScheduleMutation.isPending || !scheduleName.trim()}
+              variant="outline"
+              className="border-primary/20 hover:bg-primary/10"
+            >
+              <Save className="w-4 h-4 mr-2" />
+              {saveScheduleMutation.isPending ? 'Saving...' : 'Save Schedule'}
+            </Button>
+          </div>
+        )}
       </Card>
 
       {/* Statistics */}

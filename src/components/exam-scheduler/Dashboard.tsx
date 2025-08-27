@@ -10,11 +10,12 @@ interface DashboardProps {
   courses: Course[];
   rooms: Room[];
   programs: Program[];
+  isLoading?: boolean;
 }
 
 type ListType = 'instructors' | 'courses' | 'rooms' | 'programs';
 
-export function Dashboard({ instructors, courses, rooms, programs }: DashboardProps) {
+export function Dashboard({ instructors, courses, rooms, programs, isLoading }: DashboardProps) {
   const [activeList, setActiveList] = useState<ListType>('instructors');
 
   const data = {
